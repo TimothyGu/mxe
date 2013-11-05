@@ -1,0 +1,39 @@
+language: c
+
+env:
+  - TARGET=i686-pc-mingw32
+  - TARGET=x86_64-w64-mingw32
+  - TARGET=i686-w64-mingw32
+compiler:
+  - gcc
+branches:
+  only:
+    - master
+    - stable
+
+before_install:
+  - sudo apt-get install -qq autoconf automake bash bison bzip2 \
+                             cmake flex gettext git g++ intltool \
+                             libffi-dev libtool libltdl-dev libssl-dev \
+                             libxml-parser-perl make openssl patch perl \
+                             pkg-config scons sed unzip wget xz-utils \
+                             g++-multilib libc6-dev-i386
+script: make JOBS=4
+
+cache:
+  directories:
+  - pkg
+
+#notifications-policy: &notifications-policy
+#  on_success: change
+#  on_failure: always
+
+#notifications:
+#  email:
+#    recipients:
+#      - mpv-team@googlegroups.com
+#    <<: *notifications-policy
+#  irc:
+#    channels:
+#      - "irc.freenode.org#mpv-player-dev"
+#    <<: *notifications-policy
