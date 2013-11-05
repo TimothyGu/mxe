@@ -9,7 +9,7 @@ compiler:
 branches:
   only:
     - master
-    - stable
+#    - stable
 
 before_install:
   - sudo apt-get install -qq autoconf automake bash bison bzip2 \
