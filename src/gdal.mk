@@ -45,7 +45,6 @@ define $(PKG)_CONFIGURE
         --with-sqlite3='$(PREFIX)/$(TARGET)' \
         --with-gta='$(PREFIX)/$(TARGET)' \
         --with-hdf5='$(PREFIX)/$(TARGET)' \
-        --with-libjson-c='$(PREFIX)/$(TARGET)' \
         --without-odbc \
         --without-xerces \
         --without-grass \
@@ -87,12 +86,6 @@ define $(PKG)_MAKE
     ln -sf '$(PREFIX)/$(TARGET)/bin/gdal-config' '$(PREFIX)/bin/$(TARGET)-gdal-config'
 endef
 
-define $(PKG)_BUILD_x86_64-w64-mingw32
-    $($(PKG)_CONFIGURE) \
-        LIBS="-ljpeg -lsecur32 `'$(TARGET)-pkg-config' --libs openssl libtiff-4`"
-    $($(PKG)_MAKE)
-endef
-
 define $(PKG)_BUILD_i686-w64-mingw32
     $($(PKG)_CONFIGURE) \
         --with-netcdf='$(PREFIX)/$(TARGET)' \
@@ -100,7 +93,17 @@ define $(PKG)_BUILD_i686-w64-mingw32
     $($(PKG)_MAKE)
 endef
 
-# Can't use $(PKG)_BUILD_SHARED here as $(PKG)_BUILD_i686-w64-mingw32 has a
-# higher precedence.
-$(PKG)_BUILD_i686-w64-mingw32.shared =
-$(PKG)_BUILD_x86_64-w64-mingw32.shared =
+# portabledxr, hdf4, and netcdf are not available for x86_64-w64-mingw32
+define $(PKG)_BUILD_x86_64-w64-mingw32
+    $($(PKG)_CONFIGURE) \
+        LIBS="-ljpeg -lsecur32 `'$(TARGET)-pkg-config' --libs openssl libtiff-4`"
+    $($(PKG)_MAKE)
+endef
+
+# hdf4 and netcdf are not available for shared targets
+define $(PKG)_BUILD_i686-w64-mingw32.shared
+    $($(PKG)_CONFIGURE) \
+        --with-netcdf='$(PREFIX)/$(TARGET)' \
+        LIBS="-ljpeg -lsecur32 -lportablexdr `'$(TARGET)-pkg-config' --libs openssl libtiff-4`"
+    $($(PKG)_MAKE)
+endef
